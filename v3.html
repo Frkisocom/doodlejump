@@ -36,6 +36,8 @@ let terrainText = new Image();
 terrainText.src = 'https://github.com/Frkisocom/doodlejump/blob/main/terrain.png?raw=true';
 let bg1Text = new Image();
 bg1Text.src = 'https://github.com/Frkisocom/doodlejump/blob/main/brda.jpg?raw=true';
+let vrata = new Image();
+vrata.src = 'https://github.com/Frkisocom/doodlejump/blob/main/vrata.png?raw=true';
 
 function Terrain(ax, ay, bx, by){
     if(ax>bx){
@@ -55,11 +57,11 @@ function Terrain(ax, ay, bx, by){
 }
 var listTerrain = [];
 listTerrain[0]= new Terrain(0, canvas.height, canvas.width, canvas.height);
-listTerrain[1]= new Terrain(200, 200, 400, 400);
+listTerrain[1]= new Terrain(300, 300, 400, 400);
 listTerrain[2]= new Terrain(0, 200, 200, 200);
 listTerrain[3]= new Terrain(500, 300, 700, 100);
 listTerrain[4]= new Terrain(100, 100, 500, 100);
-listTerrain[4]= new Terrain(-0, 0, -0, 0);
+listTerrain[5]= new Terrain(-0, 0, -0, 0);
 
 function Wall(x, ay, by){
     this.ax = x;
@@ -147,13 +149,13 @@ function movement2(){
     if(leftPressed && rightPressed){}
     else if (leftPressed)
     {
-        player.x -= 4;
-        relativeX += 4;
+        player.x -= 3;
+        relativeX += 3;
     }
     else if (rightPressed)
     {
-        player.x += 4;
-        relativeX -= 4;
+        player.x += 3;
+        relativeX -= 3;
     }
     if(isGrounded){
         
@@ -162,7 +164,7 @@ function movement2(){
     }
 }
 
-var projectile = {ax: 0, ay: 0, bx: 0, by: 0, ox: 0, oy: 0, color:"#FFF000", angle: 0, max: 500, s:10, alive: false};
+var projectile = {ax: 0, ay: 0, bx: 0, by: 0, ox: 0, oy: 0, color:"#FFF000", angle: 0, max: 300, s:10, alive: false};
 function platform(){
     projectile.bx=projectile.ox+Math.cos(projectile.angle)*projectile.s;
     projectile.by=projectile.oy+Math.sin(projectile.angle)*projectile.s;
@@ -172,14 +174,13 @@ function platform(){
         projectile.alive=false;
     }
     drawTerrain(projectile);
-    for(var i = 0; i < listTerrain.length; i++){
+    for(var i = 0; i < listTerrain.length-1; i++){
         boundary=projectile.bx*listTerrain[i].m+listTerrain[i].c;
         if(projectile.bx>=listTerrain[i].ax&&projectile.bx<=listTerrain[i].bx&&
         projectile.by-5<boundary&&projectile.by+5>boundary){
             projectile.alive=false;
             listTerrain.pop();
             listTerrain.push(new Terrain(projectile.ax, projectile.ay, projectile.bx, projectile.by));
-            //projectile.bx=0;
             break;
         }
     }
@@ -195,7 +196,7 @@ function platform(){
     }
 
     var flag=true;
-    for(var i = 0; i < listTerrain.length; i++){
+    for(var i = 0; i < listTerrain.length-1; i++){
         boundary=projectile.ax*listTerrain[i].m+listTerrain[i].c;
         if(projectile.ax>=listTerrain[i].ax&&projectile.ax<=listTerrain[i].bx&&
         projectile.ay-5<boundary&&projectile.ay+5>boundary){
@@ -236,7 +237,7 @@ function keyDownHandler(e){
     if((e.key==="w"||e.key==="W")&&isGrounded===true)
         {
             isGrounded=false;
-            player.speed=-10;
+            player.speed=-7;
             player.y+=player.speed;
         }
     if(e.key==="d"||e.key==="D")
@@ -281,6 +282,7 @@ function update(){
     for(var i = 0; i < listWalls.length; i++){
         drawTerrain(listWalls[i]);
     }
+    ctx.drawImage(vrata, 200, 35, 70, 70);
     if(projectile.alive)
         platform();
     drawPlayer();
