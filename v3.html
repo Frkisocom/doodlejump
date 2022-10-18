@@ -20,6 +20,7 @@ var ctx = canvas.getContext("2d");
 var player = { x: canvas.width/2 , y: 440, w:50, h:10, speed:0};
 var rightPressed = false;
 var leftPressed = false;
+var drop = false;
 
 
 const gravity = -0.3;
@@ -61,6 +62,7 @@ listTerrain[1]= new Terrain(300, 300, 400, 400);
 listTerrain[2]= new Terrain(0, 200, 200, 200);
 listTerrain[3]= new Terrain(500, 300, 700, 100);
 listTerrain[4]= new Terrain(100, 100, 500, 100);
+//empty teren zato što projektil briše i zamjenjuje zadnji teren pa da ne bi nestala platforma
 listTerrain[5]= new Terrain(-0, 0, -0, 0);
 
 function Wall(x, ay, by){
@@ -79,8 +81,6 @@ function drawBackground(){
     ctx.drawImage(bg1Text,0, 0, canvas.width, canvas.height);
 }
 
-//U teren stavljaj linije po kojima se može hodat
-//ax mora biti manji
 function drawTerrain(teren){
     ctx.strokeStyle=teren.color||"#000000";
     ctx.beginPath();
@@ -105,12 +105,13 @@ function drawPlayer(){
     ctx.restore();
 }
 var currentPlatform=0;
-var boundary;
+
 function playerCollision(){
+    var boundary;
     for(var i = 0; i < listTerrain.length; i++){
         var boundary = player.x*listTerrain[i].m+listTerrain[i].c;
         if(((player.y>=boundary&&lastY<=boundary)||(lastY>boundary&&lastY<boundary+5))&&
-        player.x>listTerrain[i].ax&&player.x<listTerrain[i].bx&&player.speed>=0){
+        player.x>listTerrain[i].ax&&player.x<listTerrain[i].bx&&player.speed>=0&&drop==false){
             isGrounded=true;
             currentPlatform=i;
             break;
@@ -118,7 +119,7 @@ function playerCollision(){
         isGrounded=false;
     }
     for(var i = 0; i < listWalls.length; i++){
-        if(player.y-22>listWalls[i].ay&&player.y<=listWalls[i].by){
+        if(player.y-15>listWalls[i].ay&&player.y<=listWalls[i].by){
             if(player.x+24>listWalls[i].ax&&player.x<listWalls[i].ax){
                 rightPressed=false;
                 //break;
@@ -158,7 +159,6 @@ function movement2(){
         relativeX -= 3;
     }
     if(isGrounded){
-        
         player.speed=0;
         player.y=listTerrain[currentPlatform].m*player.x+listTerrain[currentPlatform].c;
     }
@@ -174,6 +174,7 @@ function platform(){
         projectile.alive=false;
     }
     drawTerrain(projectile);
+    var boundary;
     for(var i = 0; i < listTerrain.length-1; i++){
         boundary=projectile.bx*listTerrain[i].m+listTerrain[i].c;
         if(projectile.bx>=listTerrain[i].ax&&projectile.bx<=listTerrain[i].bx&&
@@ -248,16 +249,16 @@ function keyDownHandler(e){
     {
         leftPressed = true;
     }
+    if(e.key==="s"||e.key==="S")
+    {
+        drop = true;
+    }
 }
 
 function keyUpHandler(e){
-    if(e.key==="w"||e.key==="W")
-    {
-        upPressed = false;
-    }
     if(e.key==="s"||e.key==="S")
     {
-        downPressed = false;
+        drop = false;
     }
     if(e.key==="d"||e.key==="D")
     {
